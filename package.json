@@ -1,0 +1,17 @@
+{
+  "name": "simple-lp",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Simple Meteora DLMM pool screening & deploy",
+  "scripts": {
+    "start": "node --experimental-specifier-resolution=node index.js",
+    "candidates": "node --experimental-specifier-resolution=node index.js --screen"
+  },
+  "dependencies": {
+    "@meteora-ag/dlmm": "^1.0.0",
+    "@solana/web3.js": "^1.90.0",
+    "bn.js": "^5.2.1",
+    "bs58": "^5.0.0",
+    "dotenv": "^16.4.5"
+  }
+}
