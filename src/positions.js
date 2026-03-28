@@ -1,20 +1,10 @@
 import 'dotenv/config';
-import { Connection, Keypair, PublicKey } from '@solana/web3.js';
-import bs58 from 'bs58';
+import { PublicKey } from '@solana/web3.js';
 import { RPC_URL, WALLET_PRIVATE_KEY } from './config.js';
-import { loadState, saveState } from './deploy.js';
+import { getConnection, getWallet } from './lib.js';
+import { loadPositionsState } from './state.js';
 
 const POOL_API_PNL = 'https://dlmm.datapi.meteora.ag/positions';
-
-// ─── Connection + Wallet ──────────────────────────────────────
-function getConnection() {
-  return new Connection(RPC_URL, 'confirmed');
-}
-
-function getWallet() {
-  if (!WALLET_PRIVATE_KEY) throw new Error('WALLET_PRIVATE_KEY not set');
-  return Keypair.fromSecretKey(bs58.decode(WALLET_PRIVATE_KEY));
-}
 
 // ─── Get My Positions ─────────────────────────────────────────
 export async function getMyPositions() {
@@ -44,7 +34,7 @@ export async function getEnrichedPositions() {
   if (positions.length === 0) return [];
 
   // Load tracked state
-  const state = loadState();
+  const state = loadPositionsState();
 
   const enriched = [];
   for (const pos of positions) {

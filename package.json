@@ -1,14 +1,22 @@
 {
   "name": "simple-lp",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
-  "description": "Simple Meteora DLMM pool screening & deploy",
+  "description": "Meteora DLMM pool screening & deploy bot — guided conversational CLI",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node --experimental-specifier-resolution=node index.js",
-    "screen": "node --experimental-specifier-resolution=node index.js --screen",
-    "positions": "node --experimental-specifier-resolution=node index.js --positions",
-    "close": "node --experimental-specifier-resolution=node index.js --close",
-    "balance": "node --experimental-specifier-resolution=node -e \"import('./wallet-utils.js').then(m=>m.getWalletBalances().then(b=>{console.log('Wallet:',b.wallet?.slice(0,10)+'...');console.log('SOL:',b.sol?.toFixed(4));b.tokens?.forEach(t=>console.log(t.symbol||t.mint?.slice(0,6),':',t.balance?.toFixed(4)))}))\""
+    "start": "node src/index.js",
+    "screen": "node src/index.js screen",
+    "positions": "node src/index.js positions",
+    "close": "node src/index.js close",
+    "balance": "node src/index.js balance",
+    "menu": "node src/index.js menu",
+    "dry": "DRY_RUN=true node src/index.js screen",
+
+    "wallet:generate": "node src/wallet-generator.js generate",
+    "wallet:import": "node src/wallet-generator.js import",
+    "monitor": "node src/monitor.js",
+    "monitor:once": "node src/monitor.js --once"
   },
   "dependencies": {
     "@meteora-ag/dlmm": "^1.0.0",

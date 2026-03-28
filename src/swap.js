@@ -1,35 +1,26 @@
 import 'dotenv/config';
-import { Connection, Keypair, PublicKey, sendAndConfirmTransaction, VersionedTransaction } from '@solana/web3.js';
-import bs58 from 'bs58';
+import { sendAndConfirmTransaction, VersionedTransaction } from '@solana/web3.js';
 import { RPC_URL, WALLET_PRIVATE_KEY } from './config.js';
+import { getConnection, getWallet } from './lib.js';
 
-const JUPITER_QUOTE_API = 'https://quote-api.jup.ag/v6/quote';
-const JUPITER_SWAP_API = 'https://quote-api.jup.ag/v6/swap';
+const JUPITER_LITE_QUOTE = 'https://lite-api.jup.ag/swap/v1/quote';
+const JUPITER_LITE_SWAP = 'https://lite-api.jup.ag/swap/v1/swap';
 
-function getConnection() {
-  return new Connection(RPC_URL, 'confirmed');
-}
-
-function getWallet() {
-  if (!WALLET_PRIVATE_KEY) throw new Error('WALLET_PRIVATE_KEY not set');
-  return Keypair.fromSecretKey(bs58.decode(WALLET_PRIVATE_KEY));
-}
-
-// ─── Simple Jupiter Swap ───────────────────────────────────────
-export async function swapToken({ inputMint, outputMint, amount }) {
+// ─── Jupiter Lite Swap ─────────────────────────────────────────
+export async function swap({ inputMint, outputMint, amount }) {
   const wallet = getWallet();
   const connection = getConnection();
 
   try {
     // Step 1: Get quote
     const quoteRes = await fetch(
-      `${JUPITER_QUOTE_API}?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=50`
+      `${JUPITER_LITE_QUOTE}?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=50`
     );
     if (!quoteRes.ok) throw new Error(`Quote API error: ${quoteRes.status}`);
     const quote = await quoteRes.json();
 
     // Step 2: Get swap tx
-    const swapRes = await fetch(JUPITER_SWAP_API, {
+    const swapRes = await fetch(JUPITER_LITE_SWAP, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -57,5 +48,18 @@ export async function swapToken({ inputMint, outputMint, amount }) {
     };
   } catch (error) {
     return { success: false, error: error.message };
+  }
+}
+
+// ─── Get quote without executing ────────────────────────────────
+export async function getQuote(inputMint, outputMint, amount) {
+  try {
+    const res = await fetch(
+      `${JUPITER_LITE_QUOTE}?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=50`
+    );
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
   }
 }

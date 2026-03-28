@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Environment (contains secrets — NEVER commit)
+.env
+.env.local
+.env.*.local
+
+# State files (user-specific)
+conversation-state.json
+positions-state.json
+tx-history.json
+
+# Wallet files (NEVER commit!)
+wallet-keypair.json
+*.pem
+*.key
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build
+dist/
+build/
