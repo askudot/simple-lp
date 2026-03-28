@@ -4,7 +4,8 @@ import { screenPools } from './screening.js';
 import { getActiveBin, deployPool, trackPosition } from './deploy.js';
 import { getEnrichedPositions } from './positions.js';
 import { closePosition, autoSwapAllTokens } from './deploy.js';
-import { DEPLOY, TPSL } from './config.js';
+import { DEPLOY, TPSL, LIMITS, SCREENING } from './config.js';
+import { runAutoMode, stopAutoMode } from './auto-runner.js';
 import { getWalletBalances } from './wallet-utils.js';
 import { loadConversationState, saveConversationState } from './state.js';
 import {
@@ -88,43 +89,48 @@ async function cmdScreening() {
     };
     saveConversationState(conversationState);
 
+    // Check current positions
+    const positions = await getEnrichedPositions();
+    const activeCount = positions.length;
+    const remainingSlots = LIMITS.maxActivePositions - activeCount;
+
     // Header
-    console.log('📊 HASIL SCREENING\n');
-    console.log('┌────┬─────────────────────┬──────────┬─────────┬────────┬──────────┬─────────────┬───────┐');
-    console.log('│ #  │ Pool                │ Mkt Cap  │ Vol     │ TVL    │ Fee/TVL  │ BinStep/Fee │ Score │');
-    console.log('├────┼─────────────────────┼──────────┼─────────┼────────┼──────────┼─────────────┼───────┤');
+    const timeframeLabel = SCREENING.timeframe === '1h' ? '/Hour' : '/' + SCREENING.timeframe.toUpperCase();
+    console.log('');
+    console.log('==============================================================');
+    console.log('  POOL SCREENING RESULTS');
+    console.log('==============================================================');
+    console.log('');
+    console.log('  Active Positions: ' + activeCount + '/' + LIMITS.maxActivePositions + (remainingSlots > 0 ? ' (' + remainingSlots + ' slot available)' : ' (FULL)'));
+    console.log('');
+
+    // Table header
+    console.log('  #   Pool                  Mkt Cap    Vol' + timeframeLabel.padEnd(6) + '  TVL       Fee/TVL  Bin/Fee    Score');
+    console.log('  ' + '─'.repeat(90));
 
     scored.forEach((p, i) => {
-      const name = (p.name || '?').slice(0, 19);
-      const binFee = (p.binStep + '/' + p.feePct + '%').padEnd(11);
-      const star = (i === suggestion.index) ? ' ◄── suggest' : '';
+      const name = (p.name || '?').slice(0, 20).padEnd(20);
+      const rec = (i === suggestion.index) ? ' [RECOMMENDED]' : '';
       console.log(
-        `│ ${String(i + 1).padStart(2)} │ ${name.padEnd(19)} │ ${fmt(p.mcap).padStart(8)} │ ${fmt(p.volume24h).padStart(7)} │ ${fmt(p.tvl).padStart(6)} │ ${(p.feeTvlRatio?.toFixed(1) + '%').padStart(8)} │ ${binFee} │ ${p.score.toFixed(1).padStart(5)} │${star}`
+        '  ' + String(i + 1).padEnd(3) + name +
+        ' ' + fmt(p.mcap).padEnd(10) +
+        ' ' + fmt(p.volume24h).padEnd(10) +
+        ' ' + fmt(p.tvl).padEnd(9) +
+        ' ' + (p.feeTvlRatio?.toFixed(1) + '%').padEnd(7) +
+        ' ' + (p.binStep + '/' + p.feePct + '%').padEnd(10) +
+        ' ' + p.score.toFixed(1).padEnd(5) + rec
       );
     });
 
-    console.log('└────┴─────────────────────┴──────────┴─────────┴────────┴──────────┴─────────────┴───────┘');
-
-    // Legend
     console.log('');
-    console.log('📖 Keterangan Kolom:');
-    console.log('   Mkt Cap    = Market Cap (USD)');
-    console.log('   Vol        = Volume per jam (USD)');
-    console.log('   TVL        = Total Value Locked (USD)');
-    console.log('   Fee/TVL    = Fee per TVL (%) — lebih tinggi = lebih bagus');
-    console.log('   BinStep/Fee= Bin step + Fee pool (%)');
-    console.log('   Score      = organic × fee/TVL — lebih tinggi = lebih bagus');
-
+    console.log('  Suggested: ' + suggestion.pool.name + ' (Score: ' + suggestion.pool.score + ' | Vol: ' + fmt(suggestion.pool.volume24h) + timeframeLabel + ')');
     console.log('');
-    console.log('💡 Suggestion: Pool #' + (suggestion.index + 1));
-    console.log('   → ' + suggestion.pool.name + ' (score: ' + suggestion.pool.score + ')');
-    console.log('  → `screen` → refresh screening');
-    console.log('  → `positions` → cek posisi aktif');
-    console.log('  → `menu` → lihat semua command');
+    console.log('  Type pool number to select (1-' + scored.length + ')');
+    console.log("  'screen' to refresh | 'positions' to view | 'menu' for commands");
     console.log('');
 
   } catch (err) {
-    console.log('❌ Screening error:', err.message);
+    console.log('  ERROR: ' + err.message);
   }
 }
 
@@ -183,45 +189,43 @@ async function cmdPoolDetail(poolIndex) {
     };
     saveConversationState(conversationState);
 
-    // Display detail
-    console.log('\n' + '═'.repeat(50));
-    console.log('📌 ' + pool.name.toUpperCase() + ' — Detail Pool');
-    console.log('═'.repeat(50));
-    console.log('');
-    console.log('🏦 Pool:    ' + pool.pool);
-    console.log('💰 Fee:     ' + pool.feePct + '%');
-    console.log('📊 TVL:     ' + fmt(pool.tvl));
-    console.log('📈 Vol 24h: ' + fmt(pool.volume24h));
-    console.log('📉 Vol Chg: ' + (pool.volumeChange >= 0 ? '▲' : '▼') + Math.abs(pool.volumeChange || 0).toFixed(1) + '%');
-    console.log('👥 Holders: ' + (pool.holders || 0).toLocaleString());
-    console.log('💎 MCap:    ' + fmt(pool.mcap));
-    console.log('🌱 Organic: ' + (pool.organic || 0) + '/100');
-    console.log('📐 Fee/TVL: ' + (pool.feeTvlRatio || 0).toFixed(2) + '%');
-    console.log('⚡ Volatility: ' + (pool.volatility || '?') + ' ' + volatilityLabel(pool.volatility));
-    console.log('📏 Bin Step:  ' + binStep + ' (' + (binStep / 100).toFixed(2) + '% per bin)');
-    console.log('');
-    console.log('🎯 Active Bin: ' + (bin?.binId || '?'));
-    console.log('   Price:      ' + (bin?.price || '?'));
-    console.log('');
-    console.log('Score: ' + pool.score);
+    // Display detail - CLEAN UI
+    const volChange = pool.volumeChange || 0;
+    const volArrow = volChange >= 0 ? '+' : '';
+    const volColor = volChange >= 0 ? '▲' : '▼';
 
     console.log('');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('📐 PILIH RANGE');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('==============================================================');
+    console.log('  POOL DETAIL: ' + pool.name.toUpperCase());
+    console.log('==============================================================');
     console.log('');
-    console.log('⚡ Volatility kamu: ' + (pool.volatility || '?'));
+    console.log('  Pool Address:  ' + pool.pool);
+    console.log('  Fee:           ' + pool.feePct + '%');
+    console.log('  TVL:           ' + fmt(pool.tvl));
+    console.log('  Volume/Hour:   ' + fmt(pool.volume24h) + ' (' + volArrow + volChange.toFixed(1) + '%)');
+    console.log('  Holders:       ' + (pool.holders || 0).toLocaleString());
+    console.log('  Market Cap:    ' + fmt(pool.mcap));
+    console.log('  Organic:       ' + (pool.organic || 0) + '/100');
+    console.log('  Fee/TVL:       ' + (pool.feeTvlRatio || 0).toFixed(2) + '%');
+    console.log('  Volatility:    ' + (pool.volatility || '?') + ' (' + volatilityLabel(pool.volatility) + ')');
+    console.log('  Bin Step:      ' + binStep + ' (' + (binStep / 100).toFixed(2) + '% per bin)');
     console.log('');
-    console.log('  1️⃣  ×5  (tight)   → ' + calc5.targetPercent.toFixed(1) + '% range = ' + calc5.binsDown + ' bins below active');
-    console.log('                    → min bin: ' + ((bin?.binId || 0) - calc5.binsDown));
+    console.log('  Active Bin:    ' + (bin?.binId || '?'));
+    console.log('  Price:         ' + (bin?.price || '?'));
+    console.log('  Score:         ' + pool.score);
     console.log('');
-    console.log('  2️⃣  ×10 (wide)   → ' + calc10.targetPercent.toFixed(1) + '% range = ' + calc10.binsDown + ' bins below active');
-    console.log('                    → min bin: ' + ((bin?.binId || 0) - calc10.binsDown));
+    console.log('--------------------------------------------------------------');
+    console.log('  SELECT RANGE');
+    console.log('--------------------------------------------------------------');
     console.log('');
-    console.log('💡 Suggestion: ' + suggestion.multiplier + '× → ' + suggestion.label);
-    console.log('   Reason: ' + suggestion.reason);
+    console.log('  Your Volatility: ' + (pool.volatility || '?'));
     console.log('');
-    console.log('  → Pick range: ketik `1` atau `2`');
+    console.log('  [1] x5 (tight)  -> ' + calc5.targetPercent.toFixed(1) + '% range | ' + calc5.binsDown + ' bins below | min bin: ' + ((bin?.binId || 0) - calc5.binsDown));
+    console.log('  [2] x10 (wide)  -> ' + calc10.targetPercent.toFixed(1) + '% range | ' + calc10.binsDown + ' bins below | min bin: ' + ((bin?.binId || 0) - calc10.binsDown));
+    console.log('');
+    console.log('  Suggested: x' + suggestion.multiplier + ' (' + suggestion.label + ') - ' + suggestion.reason);
+    console.log('');
+    console.log("  Type '1' or '2' to select range, 'back' to return");
     console.log('  → `screen` → back ke screening');
     console.log('  → `cancel` → cancel');
     console.log('');
@@ -441,32 +445,41 @@ async function cmdPositions(args) {
   const subCmd = parts?.[0];
   const arg = parts?.[1];
 
-  console.log('\n📊 POSISI AKTIF (' + positions.length + ')\n');
-  console.log('┌────┬─────────────────────┬──────────┬──────────┬────────────┬───────────┬──────────┐');
-  console.log('│ #  │ Pool                │ PnL      │ Uncl.Fee │ Value      │ Range     │ Status   │');
-  console.log('├────┼─────────────────────┼──────────┼──────────┼────────────┼───────────┼──────────┤');
+  console.log('');
+  console.log('==============================================================');
+  console.log('  ACTIVE POSITIONS (' + positions.length + '/' + LIMITS.maxActivePositions + ')');
+  console.log('==============================================================');
+  console.log('');
+
+  if (positions.length === 0) {
+    console.log('  No active positions. Run "screen" to find pools.');
+    console.log('');
+    return;
+  }
+
+  console.log('  #   Pool                  PnL       Uncl.Fee  Value      Range  Status');
+  console.log('  ' + '─'.repeat(85));
 
   positions.forEach((pos, i) => {
     const pnl = pos.pnlUsd != null ? (pos.pnlUsd >= 0 ? '+' : '') + '$' + pos.pnlUsd.toFixed(2) : '?';
     const fee = pos.unclaimedFeeUsd != null ? '$' + pos.unclaimedFeeUsd.toFixed(2) : '$0';
     const val = pos.valueUsd != null ? '$' + pos.valueUsd.toFixed(2) : '?';
-    const range = pos.multiplier ? '×' + pos.multiplier : '?';
-    const status = pos.inRange !== null ? (pos.inRange ? '✅' : '⚠️') : '?';
-    const poolName = (pos.poolName || pos.pool?.slice(0, 8) || '?').slice(0, 19);
+    const range = pos.multiplier ? 'x' + pos.multiplier : '?';
+    const status = pos.inRange !== null ? (pos.inRange ? 'IN' : 'OUT') : '?';
+    const poolName = (pos.name || pos.pool?.slice(0, 8) || '?').slice(0, 20).padEnd(20);
     console.log(
-      `│ ${String(i + 1).padStart(2)} │ ${poolName.padEnd(19)} │ ${pnl.padStart(8)} │ ${fee.padStart(8)} │ ${val.padStart(10)} │ ${range.padStart(9)} │ ${status} │`
+      '  ' + String(i + 1).padEnd(3) + poolName +
+      ' ' + pnl.padStart(9) +
+      ' ' + fee.padStart(10) +
+      ' ' + val.padStart(11) +
+      ' ' + range.padStart(6) +
+      ' ' + status
     );
   });
 
-  console.log('└────┴─────────────────────┴──────────┴──────────┴────────────┴───────────┴──────────┘');
   console.log('');
-  console.log('💡 Suggest: close posisi yang out-of-range (⚠️) duluan');
-  console.log('');
-  console.log('Aksi:');
-  console.log('  `close <no>`  → close posisi # (e.g. `close 1`)');
-  console.log('  `detail <no>`  → detail posisi #');
-  console.log('  `claim <no>`   → claim fee posisi # (TODO)');
-  console.log('  `screen`       → screening pool baru');
+  console.log("  'close <no> --confirm' to close | 'detail <no>' for details");
+  console.log("  'screen' to find new pools");
   console.log('');
 }
 
@@ -655,7 +668,8 @@ async function parseCommand(input) {
   }
 
   // ── Cancel ───────────────────────────────────────────────
-  if (cmd === 'cancel' || cmd === 'c') {
+  if (cmd === 'cancel' || cmd === 'c' || cmd === 'stop') {
+    stopAutoMode();
     conversationState = {
       step: 'idle',
       selectedPool: null,
@@ -665,8 +679,7 @@ async function parseCommand(input) {
       calcResults: null,
     };
     saveConversationState(conversationState);
-    console.log('✅ Cancelled. Kembali ke idle state.');
-    console.log('   Ketik `screen` untuk mulai screening.');
+    console.log('  Cancelled. Type "screen" to start fresh.');
     return;
   }
 
@@ -750,106 +763,8 @@ async function parseCommand(input) {
 
 // ─── AUTO MODE ───────────────────────────────────────────────
 async function cmdAuto() {
-  console.log('\n🤖 AUTO MODE — Full flow screening → deploy\n');
-
-  try {
-    // Step 1: Screen
-    console.log('🔍 Step 1: Screening pools...');
-    const { pools } = await screenPools({ limit: 10 });
-    if (!pools || pools.length === 0) {
-      console.log('❌ No pools found.');
-      return;
-    }
-
-    const scored = scorePools(pools);
-    const suggestion = suggestPool(scored);
-    const p = suggestion.pool;
-    console.log(`   Found ${pools.length} pools`);
-    console.log(`   ✅ Auto-pick: ${p.name} (score: ${suggestion.pool.score})`);
-
-    // Step 2: Get active bin
-    console.log('\n🔍 Step 2: Fetching active bin...');
-    let bin;
-    try {
-      bin = await getActiveBin(p.pool);
-    } catch {
-      bin = { binId: '?', price: '?' };
-    }
-    console.log(`   Active bin: ${bin.binId}`);
-
-    // Step 3: Calculate range
-    const binStep = p.binStep;
-    const calc5 = calcBins(p.volatility, 5, binStep);
-    const calc10 = calcBins(p.volatility, 10, binStep);
-    const rangeSuggestion = suggestRange(p);
-    const multiplier = rangeSuggestion.multiplier;
-    const calc = multiplier === 10 ? calc10 : calc5;
-    console.log(`   ⚡ Volatility: ${p.volatility} → ${multiplier}× = ${calc.targetPercent.toFixed(1)}% range`);
-
-    // Step 4: Deploy
-    console.log('\n🔍 Step 3: Deploying...');
-    const result = await deployPool(p.pool, {
-      poolName: p.name,
-      volatility: p.volatility,
-      multiplier: multiplier,
-    });
-
-    if (result.success) {
-      // Track position
-      trackPosition({
-        position: result.position,
-        pool: p.pool,
-        poolName: p.name,
-        volatility: p.volatility,
-        multiplier: multiplier,
-        targetPercent: result.targetPercent,
-        binsDown: result.binsDown,
-        lowerBin: result.minBinId,
-        upperBin: result.maxBinId,
-        activeBin: bin?.binId,
-        amountSol: DEPLOY.amountSol,
-        baseMint: p.baseMint,
-      });
-
-      // Result
-      console.log('═'.repeat(50));
-      console.log('✅ DEPLOY SUCCESS!');
-      console.log('═'.repeat(50));
-      console.log('');
-      console.log('🏦 Pool:      ' + p.name);
-      console.log('💰 Amount:    ' + DEPLOY.amountSol + ' SOL');
-      console.log('📐 Range:     ×' + multiplier + ' = ' + calc.targetPercent.toFixed(1) + '% (' + calc.totalBins + ' bins)');
-      console.log('📍 Min bin:   ' + result.minBinId);
-      console.log('📍 Max bin:    ' + result.maxBinId);
-      console.log('🎯 Active:    ' + (bin?.binId || '?'));
-      console.log('');
-      console.log('🔗 Position:  ' + result.position);
-      console.log('📝 TX:         ' + result.tx);
-      console.log('');
-      console.log('━━━━━━━━━━━━━━━━━━━━');
-      console.log('📋 Aksi selanjutnya:');
-      console.log('  `positions` → cek posisi aktif');
-      console.log('  `close <no>` → close posisi');
-      console.log('  `balance` → cek wallet');
-      console.log('  `monitor` → start TP/SL monitor (background)');
-      console.log('━━━━━━━━━━━━━━━━━━━━');
-
-      if (TPSL.enabled) {
-        console.log('');
-        console.log('⚠️  TP/SL Active: TP +' + TPSL.tpPercent + '% | SL ' + TPSL.slPercent + '%');
-        console.log('   Run `npm run monitor` di terminal lain untuk background monitoring');
-      }
-    } else {
-      console.log('❌ DEPLOY FAILED');
-      if (result.errors) {
-        result.errors.forEach(e => console.log('   ⚠️  ' + e));
-      } else if (result.error) {
-        console.log('   ' + result.error);
-      }
-    }
-  } catch (err) {
-    console.log('❌ Auto mode error:', err.message);
-  }
+  // Run the full auto mode (continuous deploy + monitor loop)
+  await runAutoMode();
 }
 
 // ─── CLI ENTRY ───────────────────────────────────────────────
@@ -890,6 +805,7 @@ if (input) {
   });
 
   process.on('SIGINT', () => {
+    stopAutoMode();
     rl.close();
   });
 

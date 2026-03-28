@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import { PublicKey } from '@solana/web3.js';
 import { RPC_URL, WALLET_PRIVATE_KEY } from './config.js';
-import { getConnection, getWallet } from './lib.js';
+import { getWallet } from './lib.js';
+import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 
 const JUPITER_PRICE_API = 'https://price-api.jup.ag/v6/price';
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
@@ -24,7 +25,8 @@ export async function getTokenPrices(mints) {
 // ─── Get Wallet Balances ───────────────────────────────────────
 export async function getWalletBalances() {
   const wallet = getWallet();
-  const connection = getConnection();
+  // Always create fresh connection to avoid stale data
+  const connection = new Connection(RPC_URL, { commitment: 'confirmed' });
 
   const sol = await connection.getBalance(wallet.publicKey);
   const solBalance = sol / 1e9;

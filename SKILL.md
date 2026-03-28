@@ -178,6 +178,138 @@ cp .env.example .env
 npm start
 ```
 
+## 📊 Output Format Templates
+
+### Screening Pool Results
+```
+==============================================================
+  POOL SCREENING RESULTS
+==============================================================
+
+  Active Positions: 0/2 (2 slot available)
+
+  #   Pool                  Mkt Cap    Vol/Hour   TVL       Fee/TVL  Bin/Fee    Score
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  1  SQUEEZE-SOL          $169k      $26k       $15k      10.6%   125/5%     4.3   [RECOMMENDED]
+  2  Deadwhale-SOL        $548k      $8k        $7k       2.3%    80/0.8%    1.7
+  ...
+
+  Suggested: SQUEEZE-SOL (Score: 4.33 | Vol: $26k/Hour)
+
+  Type pool number to select (1-7)
+  'screen' to refresh | 'positions' to view | 'menu' for commands
+```
+
+### Pool Detail
+```
+==============================================================
+  POOL DETAIL: DEADWHALE-SOL
+==============================================================
+
+  Pool Address:  7jREzkE2gd4bzPYomSFTPhrjDFYxt832eeBExMuTd6f6
+  Fee:           0.8%
+  TVL:           $11k
+  Volume/Hour:   $7k (-21.8%)
+  Holders:       3,864
+  Market Cap:    $644k
+  Organic:       75/100
+  Fee/TVL:       1.33%
+  Volatility:    3.36 (MEDIUM)
+  Bin Step:      80 (0.80% per bin)
+
+  Active Bin:    -612
+  Price:         0.00000762
+  Score:         1.0
+
+--------------------------------------------------------------
+  SELECT RANGE
+--------------------------------------------------------------
+
+  Your Volatility: 3.36
+
+  [1] x5 (tight)  -> 16.8% range | 24 bins below | min: -636
+  [2] x10 (wide)  -> 33.6% range | 52 bins below | min: -664
+
+  Suggested: x10 (medium)
+
+  Type '1' or '2' to select, 'back' to return
+```
+
+### Deploy Success
+```
+==============================================================
+  DEPLOY SUCCESS
+==============================================================
+
+  Pool:      Deadwhale-SOL
+  Amount:    0.1 SOL
+  Strategy:  bid_ask (SOL sided)
+
+  Volatility: 3.81 x10 = 38.1% range
+  Total bins: 57 bins below active
+  Min bin:   -678
+  Max bin:   -621
+  Active:    -621
+
+  Position:  7tNb2eTb6kYd9KLG5A5M1oJNxPZGqJ3UqVGBJgDm9F5
+  TX:        5BkkMSNv2z2vZ8GfNYfTYLZcYqLnTZQqLBhPZ7xBLq...
+
+--------------------------------------------------------------
+  TP/SL Active: TP +1.0% | SL -5.0%
+  Check interval: 60s
+
+--------------------------------------------------------------
+  'positions' to view | 'screen' for new pools
+```
+
+### Position Closed
+```
+==============================================================
+  CLOSE POSITION
+==============================================================
+
+  Pool:      Deadwhale-SOL
+  PnL:       +$0.05
+  Uncl.Fee:  $0.00
+
+  TXs: 3
+  2vZ7dLJdJKyVcL7vVT3UP9GD3QQXJHTCQTL2tTa2...
+
+--------------------------------------------------------------
+  Auto-swap: checking tokens...
+  No tokens to swap
+
+--------------------------------------------------------------
+  'positions' to view remaining
+```
+
+### Wallet Balance
+```
+==============================================================
+  WALLET BALANCE
+==============================================================
+
+  Address:  CjZZFtiB94rayYAewC25qKWS1wapQgd5Hx1nJ1nCqaqi
+  SOL:      0.1437 SOL
+
+  Tokens: (none)
+```
+
+### Active Positions
+```
+==============================================================
+  ACTIVE POSITIONS (1/2)
+==============================================================
+
+  #   Pool          PnL       Uncl.Fee  Value    Range  Status
+  1  Deadwhale-SOL +$0.05    $0.00     $100.50  x10    IN
+
+  'close <no> --confirm' to close | 'detail <no>' for details
+  'screen' to find new pools
+```
+
+---
+
 ## 📁 Project Structure
 
 ```

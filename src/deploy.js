@@ -4,7 +4,7 @@ import {
   sendAndConfirmTransaction,
 } from '@solana/web3.js';
 import BN from 'bn.js';
-import { DEPLOY, DRY_RUN } from './config.js';
+import { DEPLOY, DRY_RUN, LIMITS } from './config.js';
 import { getConnection, getWallet, logTx, calcBins } from './lib.js';
 import { getWalletBalances } from './wallet-utils.js';
 import { swap } from './swap.js';

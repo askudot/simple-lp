@@ -45,18 +45,18 @@
     "tracked_at": "2026-03-28T07:19:07.926Z"
   },
   "undefined": {
-    "pool": "6R6uz9jZwvV3ZfAJJT8R1UztpwEFyMFuow5w1cKcrctv",
-    "poolName": "CAPTCHA-SOL",
-    "volatility": 5.01,
+    "pool": "7jREzkE2gd4bzPYomSFTPhrjDFYxt832eeBExMuTd6f6",
+    "poolName": "Deadwhale-SOL",
+    "volatility": 4.19,
     "multiplier": 10,
-    "targetPercent": 50.099999999999994,
-    "binsDown": 88,
-    "lowerBin": -583,
-    "upperBin": -495,
-    "activeBin": -495,
+    "targetPercent": 41.900000000000006,
+    "binsDown": 69,
+    "lowerBin": -684,
+    "upperBin": -615,
+    "activeBin": -615,
     "amountSol": 0.1,
-    "baseMint": "FtSRgyCEhKTc1PPgEAXvuHN3NyiP6LS9uyB28KCN3CAP",
-    "tracked_at": "2026-03-28T08:01:38.279Z"
+    "baseMint": "91E4cACQcnWDf7wYmwwM81HjLvCe6FR6vDT518ospump",
+    "tracked_at": "2026-03-28T10:08:33.763Z"
   },
   "F2JfZTp8NGays6uhroV7aGzd7nWTkHouyQ5pvMKn9YQ3": {
     "position": "F2JfZTp8NGays6uhroV7aGzd7nWTkHouyQ5pvMKn9YQ3",
@@ -72,5 +72,20 @@
     "amountSol": 0.1,
     "baseMint": "FtSRgyCEhKTc1PPgEAXvuHN3NyiP6LS9uyB28KCN3CAP",
     "tracked_at": "2026-03-28T08:02:02.135Z"
+  },
+  "BnBhUi2KjHfM7qbsHdWtFbCMhxa9y3dV58f1vyBdVFE1": {
+    "position": "BnBhUi2KjHfM7qbsHdWtFbCMhxa9y3dV58f1vyBdVFE1",
+    "pool": "7jREzkE2gd4bzPYomSFTPhrjDFYxt832eeBExMuTd6f6",
+    "poolName": "Deadwhale-SOL",
+    "volatility": 4.19,
+    "multiplier": 10,
+    "targetPercent": 41.900000000000006,
+    "binsDown": 69,
+    "lowerBin": -687,
+    "upperBin": -618,
+    "activeBin": -618,
+    "amountSol": 0.1,
+    "baseMint": "91E4cACQcnWDf7wYmwwM81HjLvCe6FR6vDT518ospump",
+    "tracked_at": "2026-03-28T10:12:07.340Z"
   }
 }

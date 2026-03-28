@@ -38,7 +38,21 @@ export const DEPLOY = {
   rangeMaxBinsAbove: 0,              // 0 = all bins below (SOL sided)
 
   strategy:    'bid_ask',            // 'spot' | 'curve' | 'bid_ask'
-  gasReserve:  0.01,                 // SOL kept for gas
+  gasReserve:  0.05,                 // SOL kept for gas
+};
+
+// ── TP/SL Monitoring ───────────────────────────
+export const TPSL = {
+  enabled:     true,                // Enable TP/SL monitoring
+  tpPercent:   1.0,                // Take profit at +1% PnL
+  slPercent:   -5.0,               // Stop loss at -5% PnL
+  checkIntervalMs: 60_000,         // Check every 60 seconds
+};
+
+// ── Position Limits ────────────────────────────
+export const LIMITS = {
+  maxActivePositions: 2,            // Max 2 open positions
+  autoRedeployOnClose: true,        // Auto screen + suggest when position closes
 };
 
 // ── TP/SL Monitoring ───────────────────────────
