@@ -88,5 +88,82 @@
     "amountSol": 0.1,
     "baseMint": "91E4cACQcnWDf7wYmwwM81HjLvCe6FR6vDT518ospump",
     "tracked_at": "2026-03-27T18:04:24.849Z"
+  },
+  "9dTD5wb5V3rKqZx4uy5uPY7ZKSHXj9GKPKrhtVFdwSu7": {
+    "position": "9dTD5wb5V3rKqZx4uy5uPY7ZKSHXj9GKPKrhtVFdwSu7",
+    "pool": "7jREzkE2gd4bzPYomSFTPhrjDFYxt832eeBExMuTd6f6",
+    "poolName": "Deadwhale-SOL",
+    "volatility": 6.76,
+    "multiplier": 10,
+    "targetPercent": 67.6,
+    "binsDown": 142,
+    "lowerBin": -831,
+    "upperBin": -689,
+    "activeBin": -689,
+    "amountSol": 0.1,
+    "baseMint": "91E4cACQcnWDf7wYmwwM81HjLvCe6FR6vDT518ospump",
+    "tracked_at": "2026-03-27T18:51:29.192Z"
+  },
+  "2DuzXZztHoVDvGvPsZgF5JFXuQdhbrw9RpLPqyfn6c3r": {
+    "position": "2DuzXZztHoVDvGvPsZgF5JFXuQdhbrw9RpLPqyfn6c3r",
+    "pool": "7ik5kwcwjD9W22THNqU5spBA9pELjhzfPg2eGvKtNEGn",
+    "poolName": "CHIBI-SOL",
+    "volatility": 2.31,
+    "multiplier": 10,
+    "targetPercent": 23.1,
+    "binsDown": 22,
+    "lowerBin": -391,
+    "upperBin": -369,
+    "activeBin": -369,
+    "amountSol": 0.1,
+    "baseMint": "2TpMjYXnrgxoeVCq2i6EAR8vNWqe5MNvHCz3bENNpump",
+    "tracked_at": "2026-03-28T04:33:54.225Z"
+  },
+  "GrfV5XDYKarumR5K6BmnNuqeSnkhy7Qfz9hhCEoVNJ1H": {
+    "success": true,
+    "position": "GrfV5XDYKarumR5K6BmnNuqeSnkhy7Qfz9hhCEoVNJ1H",
+    "pool": "7ik5kwcwjD9W22THNqU5spBA9pELjhzfPg2eGvKtNEGn",
+    "poolName": "CHIBI-SOL",
+    "volatility": 2.38,
+    "multiplier": 5,
+    "targetPercent": 11.899999999999999,
+    "binsDown": 11,
+    "binsAbove": 0,
+    "minBinId": -380,
+    "maxBinId": -369,
+    "totalBins": 12,
+    "amountSol": 0.1,
+    "strategy": "bid_ask",
+    "tx": "2xKRGPkKguej23n1Mt8fgxtjqv1WrawLV6TSHMNn343n6oHXmffapgbfT88JskWAgyJB5AdGCxURCd3kDBekZY2Y",
+    "txs": [
+      "2xKRGPkKguej23n1Mt8fgxtjqv1WrawLV6TSHMNn343n6oHXmffapgbfT88JskWAgyJB5AdGCxURCd3kDBekZY2Y"
+    ],
+    "baseMint": "2TpMjYXnrgxoeVCq2i6EAR8vNWqe5MNvHCz3bENNpump",
+    "tracked_at": "2026-03-28T04:47:21.203Z"
+  },
+  "Ftqcy76pwY5WuxXUL9sokkSJcBYJ1fHMXD5u8wzDVjGM": {
+    "success": true,
+    "position": "Ftqcy76pwY5WuxXUL9sokkSJcBYJ1fHMXD5u8wzDVjGM",
+    "pool": "14fsb1LMT2iXMKvZDkv9Rkht3SdyVc46YkR516WsW3VW",
+    "poolName": "PERP-SOL",
+    "volatility": 7.84,
+    "multiplier": 10,
+    "targetPercent": 78.4,
+    "binsDown": 155,
+    "binsAbove": 0,
+    "minBinId": -712,
+    "maxBinId": -557,
+    "totalBins": 156,
+    "amountSol": 0.1,
+    "strategy": "bid_ask",
+    "tx": "4Qh9bdHLnefteooAdSRg2MPUfqpbjYvxvXhTBovirwzpnvPworUyP7hzqp5oruNQuaxEGxZvbfix1hXcwAsxbEzC",
+    "txs": [
+      "4Qh9bdHLnefteooAdSRg2MPUfqpbjYvxvXhTBovirwzpnvPworUyP7hzqp5oruNQuaxEGxZvbfix1hXcwAsxbEzC",
+      "28m5F5Y94SrxqgDrvyUaRS3P93dESzLa1CZTUetaT1sw2ydFxEXVW4XHs6Lbmj7MLv2ZPAZW1ibdCPK9tiUCYxYT",
+      "4DM2b1GXPE18D5VS4hU9dvFu1CwcYZLbTGBrDEMFXie4TzyJvbSa12bPgQnBhXnHEsExNxQz2N1UAUatFatrNySE",
+      "3HvCDVtnBxUv8EfE6n2x8EbP5PSNX1gvN2Wrny4k4bCS5CqjZqoGNwgAYVCcajvkVQMwgQXCprdFcQs6YuQ6Mn2m"
+    ],
+    "baseMint": "5UCNsNY2oHDB7i2m8bW7nKJXxRoh5WS4N4xKmUB2pump",
+    "tracked_at": "2026-03-28T04:53:44.673Z"
   }
 }
