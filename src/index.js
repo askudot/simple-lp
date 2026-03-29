@@ -42,10 +42,10 @@ function suggestPool(scored) {
 
 function suggestRange(p) {
   const v = p.volatility;
-  if (v < 2) return { multiplier: 5, label: '🟢 tight (low vol)', reason: 'volatility rendah' };
-  if (v < 5) return { multiplier: 10, label: '🟡 medium', reason: 'volatility sedang' };
-  if (v < 10) return { multiplier: 10, label: '🟠 wide (high vol)', reason: 'volatility tinggi' };
-  return { multiplier: 5, label: '🔴 very tight (extreme vol)', reason: 'volatility sangat tinggi' };
+  // volatility >= 9 (high risk) → x5 (tighter, max ~60% range)
+  // volatility < 9 (stable) → x10 (wide, max ~50% range)
+  if (v >= 9) return { multiplier: 5, label: '🟢 tight', reason: 'high volatility' };
+  return { multiplier: 10, label: '🟠 wide', reason: 'normal volatility' };
 }
 
 function suggestNextAction(result) {

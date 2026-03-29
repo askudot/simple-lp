@@ -45,10 +45,10 @@ function suggestPool(scored) {
 
 function suggestRange(p) {
   const v = p.volatility;
-  if (v < 2) return { multiplier: 5, label: 'tight' };
-  if (v < 5) return { multiplier: 10, label: 'medium' };
-  if (v < 10) return { multiplier: 10, label: 'wide' };
-  return { multiplier: 5, label: 'very tight' };
+  // volatility >= 9 (high risk) → x5 (tighter, max ~60% range)
+  // volatility < 9 (stable) → x10 (wide, max ~50% range)
+  if (v >= 9) return { multiplier: 5, label: 'tight' };
+  return { multiplier: 10, label: 'wide' };
 }
 
 // ─── Auto Deploy Single Position ──────────────────────────────
