@@ -37,8 +37,9 @@ async function getActiveCount() {
 
 function suggestPool(scored) {
   const sorted = [...scored].sort((a, b) => b.score - a.score);
-  const mediumVol = sorted.filter(p => p.volatility >= 2 && p.volatility <= 8);
-  const pick = mediumVol.length > 0 ? mediumVol[0] : sorted[0];
+  // Prefer vol < 9 (aligns with x10 range rule) — exclude extreme vol >= 9
+  const stableVol = sorted.filter(p => p.volatility != null && p.volatility < 9);
+  const pick = stableVol.length > 0 ? stableVol[0] : sorted[0];
   const idx = scored.findIndex(p => p.pool === pick.pool);
   return { pool: pick, index: idx };
 }
