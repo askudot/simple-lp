@@ -44,8 +44,8 @@ export const DEPLOY = {
 // ── TP/SL Monitoring ───────────────────────────
 export const TPSL = {
   enabled:     true,                // Enable TP/SL monitoring
-  tpPercent:   1.0,                // Take profit at +1% PnL
-  slPercent:   -5.0,               // Stop loss at -5% PnL
+  tpPercent:   3.0,                // Take profit at +3% PnL
+  slPercent:   -6.0,               // Stop loss at -6% PnL
   checkIntervalMs: 60_000,         // Check every 60 seconds
 };
 
