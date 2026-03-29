@@ -45,13 +45,7 @@ export function fmtSol(n) {
   return n.toFixed(4) + ' SOL';
 }
 
-export function volatilityLabel(v) {
-  if (v == null) return '?';
-  if (v < 2) return '🟢 LOW';
-  if (v < 5) return '🟡 MEDIUM';
-  if (v < 10) return '🟠 HIGH';
-  return '🔴 EXTREME';
-}
+
 
 export function inRangeLabel(inRange) {
   if (inRange == null) return '';

@@ -76,15 +76,49 @@ export async function getEnrichedPositions() {
 }
 
 // ─── Fetch PnL from Meteora API ───────────────────────────────
+function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
 async function fetchPnL(poolAddress, walletAddress) {
   const url = `${POOL_API_PNL}/${poolAddress}/pnl?user=${walletAddress}&status=open&pageSize=100&page=1`;
-  try {
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    const data = await res.json();
-    const positions = data.positions || data.data || [];
-    return positions[0] || null;
-  } catch {
-    return null;
+
+  // Retry up to 3 times on failure
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res = await fetch(url);
+
+      // Rate limited - retry after delay
+      if (res.status === 429) {
+        if (attempt < 2) {
+          console.log(`   ⚠️  Rate limited, retrying in ${attempt + 1}s...`);
+          await sleep(1000 * (attempt + 1));
+          continue;
+        }
+      }
+
+      if (!res.ok) {
+        if (attempt < 2) {
+          console.log(`   ⚠️  PNL fetch failed (${res.status}), retrying...`);
+          await sleep(1000);
+          continue;
+        }
+        console.log(`   ⚠️  PNL fetch failed after 3 attempts`);
+        return null;
+      }
+
+      const data = await res.json();
+      const positions = data.positions || data.data || [];
+      return positions[0] || null;
+
+    } catch (e) {
+      if (attempt < 2) {
+        await sleep(1000);
+        continue;
+      }
+      console.log(`   ⚠️  PNL fetch error: ${e.message}`);
+    }
   }
+
+  return null;
 }

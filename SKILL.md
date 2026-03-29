@@ -188,15 +188,15 @@ npm start
 
   Active Positions: 0/2 (2 slot available)
 
-  #   Pool                  Mkt Cap    Vol/Hour   TVL       Fee/TVL  Bin/Fee    Score
-  ──────────────────────────────────────────────────────────────────────────────────────────
-  1  SQUEEZE-SOL          $169k      $26k       $15k      10.6%   125/5%     4.3   [RECOMMENDED]
-  2  Deadwhale-SOL        $548k      $8k        $7k       2.3%    80/0.8%    1.7
+  #   Pool                  Mkt Cap    Vol/Hour   TVL       Score
+  ──────────────────────────────────────────────────────────────────────
+  1  TRASH-SOL           $334k      $30k       $13k      3.2  
+  2  PERK-SOL            $738k      $32k       $53k      1.7   [RECOMMENDED]
   ...
 
-  Suggested: SQUEEZE-SOL (Score: 4.33 | Vol: $26k/Hour)
+  Suggested: PERK-SOL (Score: 1.69 | Vol: $32k/Hour)
 
-  Type pool number to select (1-7)
+  Type pool number to select (1-8)
   'screen' to refresh | 'positions' to view | 'menu' for commands
 ```
 

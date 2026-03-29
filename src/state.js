@@ -12,7 +12,9 @@ export function loadStateFile(filename) {
   if (fs.existsSync(filePath)) {
     try {
       return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    } catch {}
+    } catch (e) {
+      console.warn(`   ⚠️  ${filename} corrupted, resetting: ${e.message}`);
+    }
   }
   return null;
 }

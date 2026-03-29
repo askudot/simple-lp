@@ -44,6 +44,21 @@ export async function screenPools({ limit = 20 } = {}) {
   const pools = (data.data || []).map(condensePool);
   console.log(`   Found ${pools.length} pools matching filters`);
 
+  // Show helpful message when 0 pools found
+  if (pools.length === 0 && data.total === 0) {
+    console.log('');
+    console.log('   ⚠️  No pools found matching your filters.');
+    console.log('   Your current filters:');
+    console.log(`     - minMcap:      $${(s.minMcap / 1000).toFixed(0)}k`);
+    console.log(`     - minHolders:   ${s.minHolders}`);
+    console.log(`     - minVolume:    $${(s.minVolume / 1000).toFixed(0)}k/${s.timeframe}`);
+    console.log(`     - minFeeTVL:    ${s.minFeeActiveTvlRatio}%`);
+    console.log(`     - minOrganic:   ${s.minOrganic}`);
+    console.log('');
+    console.log('   💡 Try: Lower minOrganic or minFeeTVL to see more pools');
+    console.log('');
+  }
+
   return { total: data.total, pools };
 }
 
@@ -71,14 +86,6 @@ function condensePool(p) {
     volume24h: Math.round(p.volume || 0),
     feeTvlRatio: fix(p.fee_active_tvl_ratio, 4) ?? fix(p.active_tvl > 0 ? (p.fee / p.active_tvl) * 100 : 0, 4),
     volatility: fix(p.volatility, 2),
-    volatilityLabel: (() => {
-      const v = p.volatility;
-      if (v == null) return '?';
-      if (v < 2) return 'LOW';
-      if (v < 5) return 'MEDIUM';
-      if (v < 10) return 'HIGH';
-      return 'EXTREME';
-    })(),
     holders:   p.base_token_holders,
     mcap:      Math.round(p.token_x?.market_cap || 0),
     organic:   Math.round(p.token_x?.organic_score || 0),

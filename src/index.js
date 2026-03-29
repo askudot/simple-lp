@@ -11,7 +11,6 @@ import { loadConversationState, saveConversationState } from './state.js';
 import {
   fmtUsd as fmt,
   fmtSol,
-  volatilityLabel,
   inRangeLabel,
   calcBins,
 } from './lib.js';
@@ -35,8 +34,8 @@ function suggestPool(scored) {
   const mediumVol = sorted.filter(p => p.volatility >= 2 && p.volatility <= 8);
   const pick = mediumVol.length > 0 ? mediumVol[0] : sorted[0];
 
-  // Find actual index in original scored array
-  const idx = scored.findIndex(p => p.pool === pick.pool);
+  // Find index in SORTED array (for display matching)
+  const idx = sorted.findIndex(p => p.pool === pick.pool);
   return { pool: pick, index: idx };
 }
 
@@ -76,7 +75,8 @@ async function cmdScreening() {
     }
 
     const scored = scorePools(pools);
-    const suggestion = suggestPool(scored);
+    const sorted = [...scored].sort((a, b) => b.score - a.score);
+    const suggestion = suggestPool(sorted);
 
     // Save state
     conversationState = {
@@ -105,8 +105,8 @@ async function cmdScreening() {
     console.log('');
 
     // Table header
-    console.log('  #   Pool                  Mkt Cap    Vol' + timeframeLabel.padEnd(6) + '  TVL       Fee/TVL  Volat.  Score');
-    console.log('  ' + '─'.repeat(90));
+    console.log('  #   Pool                  Mkt Cap    Vol' + timeframeLabel.padEnd(6) + '  TVL       Score');
+    console.log('  ' + '─'.repeat(70));
 
     scored.forEach((p, i) => {
       const name = (p.name || '?').slice(0, 20).padEnd(20);
@@ -116,8 +116,6 @@ async function cmdScreening() {
         ' ' + fmt(p.mcap).padEnd(10) +
         ' ' + fmt(p.volume24h).padEnd(10) +
         ' ' + fmt(p.tvl).padEnd(9) +
-        ' ' + (p.feeTvlRatio?.toFixed(1) + '%').padEnd(7) +
-        ' ' + String(p.volatility || '?').padEnd(6) +
         ' ' + p.score.toFixed(1).padEnd(5) + rec
       );
     });

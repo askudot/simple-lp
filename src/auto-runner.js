@@ -228,8 +228,8 @@ export async function runAutoMode() {
     const deployed = await autoDeployOne();
 
     if (!deployed) {
-      console.log('[AUTO] Failed to deploy, retrying in 30s...');
-      await sleep(30000);
+      console.log('[AUTO] Failed to deploy, retrying in 60s...');
+      await sleep(60000);
     }
 
     // Re-check count after deploy

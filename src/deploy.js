@@ -46,7 +46,7 @@ async function getDLMM() {
 
 // ─── Pool Cache ────────────────────────────────────────────────
 const poolCache = new Map();
-const POOL_CACHE_TTL = 5 * 60 * 1000; // 5 min
+const POOL_CACHE_TTL = 1 * 60 * 1000; // 1 min
 
 async function getPool(poolAddress) {
   const key = poolAddress.toString();
