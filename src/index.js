@@ -105,7 +105,7 @@ async function cmdScreening() {
     console.log('');
 
     // Table header
-    console.log('  #   Pool                  Mkt Cap    Vol' + timeframeLabel.padEnd(6) + '  TVL       Fee/TVL  Bin/Fee    Score');
+    console.log('  #   Pool                  Mkt Cap    Vol' + timeframeLabel.padEnd(6) + '  TVL       Fee/TVL  Volat.  Score');
     console.log('  ' + '─'.repeat(90));
 
     scored.forEach((p, i) => {
@@ -117,7 +117,7 @@ async function cmdScreening() {
         ' ' + fmt(p.volume24h).padEnd(10) +
         ' ' + fmt(p.tvl).padEnd(9) +
         ' ' + (p.feeTvlRatio?.toFixed(1) + '%').padEnd(7) +
-        ' ' + (p.binStep + '/' + p.feePct + '%').padEnd(10) +
+        ' ' + String(p.volatility || '?').padEnd(6) +
         ' ' + p.score.toFixed(1).padEnd(5) + rec
       );
     });
@@ -205,9 +205,9 @@ async function cmdPoolDetail(poolIndex) {
     console.log('  Volume/Hour:   ' + fmt(pool.volume24h) + ' (' + volArrow + volChange.toFixed(1) + '%)');
     console.log('  Holders:       ' + (pool.holders || 0).toLocaleString());
     console.log('  Market Cap:    ' + fmt(pool.mcap));
-    console.log('  Organic:       ' + (pool.organic || 0) + '/100');
+    console.log('  Organic:       ' + (pool.organic || 0));
     console.log('  Fee/TVL:       ' + (pool.feeTvlRatio || 0).toFixed(2) + '%');
-    console.log('  Volatility:    ' + (pool.volatility || '?') + ' (' + volatilityLabel(pool.volatility) + ')');
+    console.log('  Volatility:    ' + (pool.volatility ?? '?'));
     console.log('  Bin Step:      ' + binStep + ' (' + (binStep / 100).toFixed(2) + '% per bin)');
     console.log('');
     console.log('  Active Bin:    ' + (bin?.binId || '?'));
@@ -218,7 +218,7 @@ async function cmdPoolDetail(poolIndex) {
     console.log('  SELECT RANGE');
     console.log('--------------------------------------------------------------');
     console.log('');
-    console.log('  Your Volatility: ' + (pool.volatility || '?'));
+    console.log('  Volatility:     ' + (pool.volatility ?? '?'));
     console.log('');
     console.log('  [1] x5 (tight)  -> ' + calc5.targetPercent.toFixed(1) + '% range | ' + calc5.binsDown + ' bins below | min bin: ' + ((bin?.binId || 0) - calc5.binsDown));
     console.log('  [2] x10 (wide)  -> ' + calc10.targetPercent.toFixed(1) + '% range | ' + calc10.binsDown + ' bins below | min bin: ' + ((bin?.binId || 0) - calc10.binsDown));

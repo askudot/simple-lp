@@ -1,8 +1,7 @@
 import 'dotenv/config';
-import { PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { RPC_URL, WALLET_PRIVATE_KEY } from './config.js';
 import { getWallet } from './lib.js';
-import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 
 const JUPITER_PRICE_API = 'https://price-api.jup.ag/v6/price';
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
