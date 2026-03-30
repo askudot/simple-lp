@@ -188,13 +188,13 @@ npm start
 
   Active Positions: 0/2 (2 slot available)
 
-  #   Pool                  Mkt Cap    Vol/Hour   TVL       Score
-  ──────────────────────────────────────────────────────────────────────
-  1  TRASH-SOL           $334k      $30k       $13k      3.2  
-  2  PERK-SOL            $738k      $32k       $53k      1.7   [RECOMMENDED]
+  #   Pool                  Mkt Cap    TVL       Bin     Fee    Score
+  ─────────────────────────────────────────────────────────────────────
+  1  TRASH-SOL           $334k      $13k      100     0.25%   3.2  
+  2  PERK-SOL            $738k      $53k      100     2%      1.7   [RECOMMENDED]
   ...
 
-  Suggested: PERK-SOL (Score: 1.69 | Vol: $32k/Hour)
+  Suggested: PERK-SOL (Score: 1.69)
 
   Type pool number to select (1-8)
   'screen' to refresh | 'positions' to view | 'menu' for commands

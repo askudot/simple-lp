@@ -120,23 +120,26 @@ async function cmdScreening() {
     console.log('');
 
     // Table header
-    console.log('  #   Pool                  Mkt Cap    Vol' + timeframeLabel.padEnd(6) + '  TVL       Score');
-    console.log('  ' + '─'.repeat(70));
+    console.log('  #   Pool                  Mkt Cap    TVL       Bin     Fee    Score');
+    console.log('  ' + '─'.repeat(72));
 
     sorted.forEach((p, i) => {
       const name = (p.name || '?').slice(0, 20).padEnd(20);
       const rec = (i === suggestion.index) ? ' [RECOMMENDED]' : '';
+      const bin = (p.binStep || '-').toString().padEnd(5);
+      const fee = ((p.feePct || 0) + '%').padEnd(5);
       console.log(
         '  ' + String(i + 1).padEnd(3) + name +
         ' ' + fmt(p.mcap).padEnd(10) +
-        ' ' + fmt(p.volume24h).padEnd(10) +
         ' ' + fmt(p.tvl).padEnd(9) +
+        ' ' + bin +
+        ' ' + fee +
         ' ' + p.score.toFixed(1).padEnd(5) + rec
       );
     });
 
     console.log('');
-    console.log('  Suggested: ' + suggestion.pool.name + ' (Score: ' + suggestion.pool.score + ' | Vol: ' + fmt(suggestion.pool.volume24h) + timeframeLabel + ')');
+    console.log('  Suggested: ' + suggestion.pool.name + ' (Score: ' + suggestion.pool.score + ')');
     console.log('');
     console.log('  Type pool number to select (1-' + scored.length + ')');
     console.log("  'screen' to refresh | 'positions' to view | 'menu' for commands");

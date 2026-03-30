@@ -93,6 +93,8 @@ function condensePool(p) {
     price:     p.pool_price,
     priceChange: fix(p.pool_price_change_pct, 1),
     volumeChange: fix(p.volume_change_pct, 1),
+    holdersChange: fix(p.base_token_holders_change_pct, 1),
+    priceTrend: p.price_trend || null,
   };
 }
 
