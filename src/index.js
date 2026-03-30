@@ -25,6 +25,20 @@ function scorePools(pools) {
   })).sort((a, b) => b.score - a.score);
 }
 
+// ─── Remove duplicate base tokens ──────────────────────────────
+function dedupeTokens(scored) {
+  const seen = new Set();
+  const result = [];
+  for (const p of scored) {
+    const base = p.baseSymbol || p.name?.replace('-SOL', '') || p.baseMint;
+    if (!seen.has(base)) {
+      seen.add(base);
+      result.push(p);
+    }
+  }
+  return result;
+}
+
 // ─── Suggestion helpers ──────────────────────────────────────
 function suggestPool(scored) {
   // Sort by score, pick best one with medium volatility (2-8)
@@ -75,14 +89,15 @@ async function cmdScreening() {
     }
 
     const scored = scorePools(pools);
-    const sorted = [...scored].sort((a, b) => b.score - a.score);
+    const deduped = dedupeTokens(scored);
+    const sorted = [...deduped].sort((a, b) => b.score - a.score);
     const suggestion = suggestPool(sorted);
 
     // Save state
     conversationState = {
       step: 'screening',
       selectedPool: null,
-      scoredPools: scored,
+      scoredPools: deduped,  // Use deduped for selection
       poolDetail: null,
       binData: null,
       calcResults: null,
@@ -108,7 +123,7 @@ async function cmdScreening() {
     console.log('  #   Pool                  Mkt Cap    Vol' + timeframeLabel.padEnd(6) + '  TVL       Score');
     console.log('  ' + '─'.repeat(70));
 
-    scored.forEach((p, i) => {
+    sorted.forEach((p, i) => {
       const name = (p.name || '?').slice(0, 20).padEnd(20);
       const rec = (i === suggestion.index) ? ' [RECOMMENDED]' : '';
       console.log(

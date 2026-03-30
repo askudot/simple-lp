@@ -20,6 +20,20 @@ function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
 }
 
+// ─── Remove duplicate base tokens ──────────────────────────────
+function dedupeTokens(scored) {
+  const seen = new Set();
+  const result = [];
+  for (const p of scored) {
+    const base = p.baseSymbol || p.name?.replace('-SOL', '') || p.baseMint;
+    if (!seen.has(base)) {
+      seen.add(base);
+      result.push(p);
+    }
+  }
+  return result;
+}
+
 async function getAvailableBalance() {
   const bal = await getWalletBalances();
   return bal.sol;
@@ -68,9 +82,30 @@ async function autoDeployOne() {
     const scored = pools.map(p => ({
       ...p,
       score: parseFloat(((p.organic || 0) * (p.feeTvlRatio || 0) * 0.01).toFixed(2)),
-    })).sort((a, b) => b.score - a.score);
+    }));
 
-    const { pool: p, index: idx } = suggestPool(scored);
+    // Get already-deployed tokens to skip
+    const positions = await getEnrichedPositions();
+    const deployedTokens = positions.map(pos => {
+      // Extract base token name from pool name like "PIXEL-SOL"
+      return pos.poolName?.replace('-SOL', '') || '';
+    });
+    console.log('[AUTO] Deployed tokens to skip:', deployedTokens.length > 0 ? deployedTokens : 'none');
+
+    // Filter: remove duplicates AND already-deployed tokens
+    const deduped = dedupeTokens(scored);
+    const available = deduped.filter(p => {
+      const base = p.baseSymbol || p.name?.replace('-SOL', '') || '';
+      return !deployedTokens.includes(base);
+    });
+
+    if (available.length === 0) {
+      console.log('[AUTO] No available pools (all tokens already deployed)');
+      return false;
+    }
+
+    const sorted = [...available].sort((a, b) => b.score - a.score);
+    const { pool: p, index: idx } = suggestPool(sorted);
 
     console.log('[AUTO] Best pool: ' + p.name + ' (Score: ' + p.score + ')');
 
